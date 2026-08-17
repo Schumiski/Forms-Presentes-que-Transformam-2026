@@ -18,63 +18,22 @@ const ADMIN_TOKEN = "KLYeK5zKy328PcxD";
 
 const STATUSES = ["Novo", "Em contato", "Aprovado", "Concluído"];
 
-const FIELD_LABELS = {
-  "Data/Hora": "Data/Hora",
-  nome: "Nome",
-  como_conheceu: "Como conheceu",
-  como_conheceu_outro: "Como conheceu (descrição)",
-  celular: "Celular",
-  celular_opcional: "Celular 2",
-  email: "E-mail",
-  cpf: "CPF",
-  cep: "CEP",
-  rua: "Rua",
-  numero: "Número",
-  complemento: "Complemento",
-  bairro: "Bairro",
-  cidade: "Cidade",
-  estado: "Estado",
-  motivo: "Motivo",
-  motivo_outro: "Motivo (descrição)",
-  data_nascimento: "Data de nascimento",
-  evento_para: "O evento é para você?",
-  h_nome: "Nome do homenageado",
-  h_como_conheceu: "Como o homenageado conheceu",
-  h_celular: "Celular do homenageado",
-  h_celular_opcional: "Celular 2 do homenageado",
-  h_email: "E-mail do homenageado",
-  h_cpf: "CPF do homenageado",
-  h_cep: "CEP do homenageado",
-  h_rua: "Rua do homenageado",
-  h_numero: "Número do homenageado",
-  h_complemento: "Complemento do homenageado",
-  h_bairro: "Bairro do homenageado",
-  h_cidade: "Cidade do homenageado",
-  h_estado: "Estado do homenageado",
-  titulo_link: "Título do link",
-  data_evento: "Data do evento",
-  periodo: "Período ativo",
-  periodo_personalizado: "Data final (período)",
-  ticket: "Ticket",
-  ticket_aberto: "Valor mínimo",
-};
-
 const GROUPS = [
   {
     title: "Sobre você",
-    keys: ["Data/Hora", "nome", "como_conheceu", "como_conheceu_outro", "celular", "celular_opcional", "email", "cpf", "data_nascimento"],
+    keys: ["Data/Hora", "Nome", "Como conheceu", "Como conheceu (descrição)", "Celular", "Celular 2", "E-mail", "CPF", "Data de nascimento"],
   },
   {
     title: "Endereço",
-    keys: ["cep", "rua", "numero", "complemento", "bairro", "cidade", "estado"],
+    keys: ["CEP", "Rua", "Número", "Complemento", "Bairro", "Cidade", "Estado"],
   },
   {
     title: "Evento",
-    keys: ["motivo", "motivo_outro", "evento_para", "titulo_link", "data_evento", "periodo", "periodo_personalizado", "ticket", "ticket_aberto"],
+    keys: ["Motivo", "Motivo (descrição)", "O evento é para você?", "Título do link", "Data do evento", "Período ativo", "Data final (período personalizado)", "Ticket", "Valor mínimo (ticket aberto)"],
   },
   {
     title: "Homenageado",
-    keys: ["h_nome", "h_como_conheceu", "h_celular", "h_celular_opcional", "h_email", "h_cpf", "h_cep", "h_rua", "h_numero", "h_complemento", "h_bairro", "h_cidade", "h_estado"],
+    keys: ["Nome do homenageado", "Como o homenageado conheceu", "Celular do homenageado", "Celular 2 do homenageado", "E-mail do homenageado", "CPF do homenageado", "CEP do homenageado", "Rua do homenageado", "Número do homenageado", "Complemento do homenageado", "Bairro do homenageado", "Cidade do homenageado", "Estado do homenageado"],
   },
 ];
 
@@ -152,10 +111,10 @@ async function loadData() {
     const json = await response.json();
     if (!json.ok) throw new Error(json.error || "Falha ao carregar os dados.");
     rows = json.rows || [];
-  } catch {
+  } catch (err) {
     rows = [];
     $("loadError").textContent =
-      "Não foi possível carregar os dados. Confira a URL do Apps Script em admin.js e tente novamente.";
+      err.message || "Não foi possível carregar os dados. Confira a URL do Apps Script em admin.js e tente novamente.";
     $("loadError").hidden = false;
   } finally {
     setLoading(false);
@@ -169,7 +128,7 @@ function getFilteredRows() {
     if (statusFilter && row.status !== statusFilter) return false;
     if (!term) return true;
     const d = row.data;
-    const haystack = [d.nome, d.email, d.celular, d.titulo_link, d.cidade, d["Data/Hora"]]
+    const haystack = [d["Nome"], d["E-mail"], d["Celular"], d["Título do link"], d["Cidade"], d["Data/Hora"]]
       .join(" ")
       .toLowerCase();
     return haystack.includes(term);
@@ -192,14 +151,14 @@ function render() {
       return `
         <tr>
           <td>${esc(d["Data/Hora"] || "")}</td>
-          <td><strong>${esc(d.nome || "")}</strong></td>
-          <td>${esc(d.celular || "")}</td>
-          <td>${esc(d.email || "")}</td>
-          <td>${esc(d.titulo_link || "")}</td>
-          <td>${esc(toBrDate(d.data_evento || ""))}</td>
-          <td>${esc(d.ticket || "")}</td>
+          <td><strong>${esc(d["Nome"] || "")}</strong></td>
+          <td>${esc(d["Celular"] || "")}</td>
+          <td>${esc(d["E-mail"] || "")}</td>
+          <td>${esc(d["Título do link"] || "")}</td>
+          <td>${esc(toBrDate(d["Data do evento"] || ""))}</td>
+          <td>${esc(d["Ticket"] || "")}</td>
           <td>
-            <select class="status-select" data-row="${row.rowNumber}" aria-label="Status de ${esc(d.nome || "resposta")}">
+            <select class="status-select" data-row="${row.rowNumber}" aria-label="Status de ${esc(d["Nome"] || "resposta")}">
               ${statusOptions.map((s) => `<option value="${esc(s)}" ${s === row.status ? "selected" : ""}>${esc(s)}</option>`).join("")}
             </select>
           </td>
@@ -216,7 +175,7 @@ function openDetail(rowNumber) {
 
   const groupsHtml = GROUPS.map((group) => {
     const items = group.keys
-      .map((key) => ({ key, label: FIELD_LABELS[key] || key, value: toBrDate(d[key] || "") }))
+      .map((key) => ({ key, label: key, value: toBrDate(d[key] || "") }))
       .filter((item) => item.value);
     if (!items.length) return "";
     return `
@@ -228,7 +187,7 @@ function openDetail(rowNumber) {
       </div>`;
   }).join("");
 
-  $("modalTitle").textContent = `Formulário de ${d.nome || "sem nome"}`;
+  $("modalTitle").textContent = `Formulário de ${d["Nome"] || "sem nome"}`;
   $("modalBody").innerHTML = groupsHtml || "<p class='admin-empty'>Sem dados para exibir.</p>";
   $("detailModal").hidden = false;
   document.body.style.overflow = "hidden";

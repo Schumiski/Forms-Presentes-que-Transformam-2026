@@ -1,6 +1,32 @@
 // URL do aplicativo web do Google Apps Script (cole após a implantação)
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDfeoMtY64rhx5zSY5Bzcx5xKS8ad3k2aA7F3jNe8pJkUNzpq8xPWpZ4mJC_JNldl65w/exec";
 
+// Acesso rápido ao painel de gestão (admin.html):
+// 1. Atalho de teclado: Ctrl+Shift+A
+// 2. Clique 5 vezes rapidamente no texto "Amigos do Bem"
+const openAdmin = () => window.location.href = "admin.html";
+
+document.addEventListener("keydown", (event) => {
+  if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "a") {
+    event.preventDefault();
+    openAdmin();
+  }
+});
+
+let kickerClicks = 0;
+let kickerTimer = null;
+document.addEventListener("click", (event) => {
+  const kicker = event.target.closest(".page-kicker");
+  if (!kicker) return;
+  kickerClicks++;
+  clearTimeout(kickerTimer);
+  kickerTimer = setTimeout(() => (kickerClicks = 0), 1500);
+  if (kickerClicks >= 5) {
+    kickerClicks = 0;
+    openAdmin();
+  }
+});
+
 const continueBtn = document.getElementById("continueBtn");
 
 if (continueBtn) {
