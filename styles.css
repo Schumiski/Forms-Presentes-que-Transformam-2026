@@ -958,6 +958,7 @@ body::after {
   width: min(1200px, calc(100% - 32px));
   margin: 0 auto;
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: clamp(22px, 4vw, 40px) 0;
@@ -967,6 +968,7 @@ body::after {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: clamp(22px, 4vw, 40px) 0;
   display: grid;
   gap: 18px;
@@ -974,6 +976,7 @@ body::after {
 
 .thankyou-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -1009,7 +1012,8 @@ body::after {
   background-repeat: no-repeat;
   background-attachment: scroll;
   min-height: 100vh;
-  overflow: hidden;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 .stage-1::before,
@@ -1026,6 +1030,7 @@ body::after {
   background-repeat: no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .stage-2::before,
@@ -1075,6 +1080,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .stage-1 .page-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 20px;
 }
 
