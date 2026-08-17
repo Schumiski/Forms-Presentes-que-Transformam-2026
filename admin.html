@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presentes que Transformam | Gestão</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-page">
+  <main id="loginView" class="admin-shell" hidden>
+    <section class="admin-card login-card">
+      <p class="page-kicker">Amigos do Bem</p>
+      <h1>Painel de Gestão</h1>
+      <form id="loginForm" class="login-form">
+        <label>
+          Senha
+          <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Digite a senha de acesso" required />
+        </label>
+        <button class="submit-btn" type="submit">Entrar</button>
+        <p id="loginError" class="login-error" hidden>Senha incorreta.</p>
+      </form>
+    </section>
+  </main>
+
+  <main id="adminView" class="admin-shell" hidden>
+    <section class="admin-card admin-header">
+      <div>
+        <p class="page-kicker">Amigos do Bem</p>
+        <h1>Formulários Preenchidos</h1>
+      </div>
+      <div class="admin-header-actions">
+        <span id="rowCount" class="row-count"></span>
+        <button class="link-btn" type="button" id="refreshBtn">Atualizar</button>
+        <button class="link-btn" type="button" id="exportBtn">Exportar CSV</button>
+        <button class="link-btn" type="button" id="logoutBtn">Sair</button>
+      </div>
+    </section>
+
+    <section class="admin-card admin-filters">
+      <input type="search" id="searchInput" placeholder="Buscar por nome, e-mail, celular, evento, cidade..." />
+      <select id="statusFilter" aria-label="Filtrar por status"></select>
+    </section>
+
+    <section class="admin-card table-card">
+      <p id="loadError" class="admin-error" hidden></p>
+      <p id="loadingMsg" class="admin-empty">Carregando formulários...</p>
+      <p id="emptyMsg" class="admin-empty" hidden>Nenhum formulário preenchido ainda.</p>
+      <p id="noResultsMsg" class="admin-empty" hidden>Nenhum resultado para os filtros aplicados.</p>
+      <div id="tableWrap" class="table-wrap" hidden>
+        <table id="responsesTable">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Nome</th>
+              <th>Celular</th>
+              <th>E-mail</th>
+              <th>Evento</th>
+              <th>Data do evento</th>
+              <th>Ticket</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="responsesBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="detailModal" class="modal-backdrop" hidden>
+    <div class="admin-card modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 id="modalTitle">Detalhes do formulário</h2>
+        <button class="link-btn" type="button" id="closeModalBtn">Fechar</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
