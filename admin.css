@@ -313,3 +313,380 @@ tbody tr:hover {
     max-width: 100%;
   }
 }
+
+/* ============================================================
+   Abas (Dashboard / Cards / Registros)
+   ============================================================ */
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(201, 146, 71, 0.14);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  white-space: nowrap;
+  background: transparent;
+  color: #8b6240;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tab-btn:hover:not(.active) {
+  color: #c45d15;
+}
+
+.tab-btn.active {
+  background: rgba(255, 252, 246, 0.98);
+  color: #c45d15;
+  box-shadow: 0 2px 8px rgba(128, 88, 49, 0.14);
+}
+
+.tab-panel {
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+/* ============================================================
+   Dashboard — estatísticas
+   ============================================================ */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: rgba(255, 252, 246, 0.96);
+  border: 1px solid rgba(201, 146, 71, 0.2);
+  border-top: 4px solid #f57a1f;
+  border-radius: 16px;
+  padding: 16px 14px;
+  text-align: center;
+  transition: transform 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card .stat-number {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #c45d15;
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8b6240;
+}
+
+.stat-card.stat-blue {
+  border-top-color: #2f80ed;
+}
+
+.stat-card.stat-blue .stat-number {
+  color: #1f6fd0;
+}
+
+.stat-card.stat-green {
+  border-top-color: #2e7d32;
+}
+
+.stat-card.stat-green .stat-number {
+  color: #2e7d32;
+}
+
+.stat-card.stat-gray {
+  border-top-color: #8b6240;
+}
+
+.stat-card.stat-gray .stat-number {
+  color: #6d4c33;
+}
+
+/* ============================================================
+   Dashboard — gráficos
+   ============================================================ */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.chart-card {
+  background: rgba(255, 252, 246, 0.82);
+  border: 1px solid rgba(201, 146, 71, 0.16);
+  border-radius: 18px;
+  padding: 16px 18px;
+}
+
+.chart-title {
+  margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(201, 146, 71, 0.18);
+  color: #c45d15;
+  font-size: 0.95rem;
+}
+
+.chart-empty {
+  padding: 26px 0;
+  text-align: center;
+  color: #8b6240;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.h-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.h-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.h-bar-label {
+  min-width: 110px;
+  font-size: 0.82rem;
+  color: #5a3720;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.h-bar-track {
+  flex: 1;
+  height: 22px;
+  background: rgba(201, 146, 71, 0.14);
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+.h-bar-fill {
+  height: 100%;
+  min-width: 4px;
+  border-radius: 11px;
+  transition: width 0.8s ease;
+}
+
+.h-bar-value {
+  min-width: 26px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #5a3720;
+  flex-shrink: 0;
+}
+
+.v-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 170px;
+  padding-top: 10px;
+}
+
+.v-bar-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.v-bar-fill {
+  width: 100%;
+  max-width: 34px;
+  min-height: 4px;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.8s ease;
+}
+
+.v-bar-label {
+  font-size: 0.7rem;
+  color: #8b6240;
+  text-align: center;
+}
+
+.v-bar-value {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #5a3720;
+}
+
+/* ============================================================
+   Cards dos formulários
+   ============================================================ */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.form-card-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255, 252, 246, 0.96);
+  border: 1px solid rgba(201, 146, 71, 0.2);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(128, 88, 49, 0.08);
+}
+
+.fc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fc-head h3 {
+  margin: 0;
+  color: #5b361d;
+  font-size: 1.15rem;
+}
+
+.fc-kicker {
+  margin: 0 0 6px;
+  color: #c45d15;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fc-facts {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.fc-facts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.fc-facts dt {
+  color: #8b6240;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.fc-facts dd {
+  margin: 0;
+  color: #5a3720;
+  font-size: 0.9rem;
+  text-align: right;
+  word-break: break-word;
+}
+
+.fc-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  align-items: center;
+}
+
+.fc-actions .status-select {
+  flex: 1;
+}
+
+/* ============================================================
+   Badges de status
+   ============================================================ */
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge.s-novo {
+  background: rgba(245, 122, 31, 0.14);
+  color: #c45d15;
+}
+
+.status-badge.s-contato {
+  background: rgba(47, 128, 237, 0.12);
+  color: #1f6fd0;
+}
+
+.status-badge.s-aprovado {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.status-badge.s-concluido {
+  background: rgba(139, 98, 64, 0.14);
+  color: #6d4c33;
+}
+
+/* ============================================================
+   Responsivo (abas, cards, dashboard)
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .admin-tabs {
+    border-radius: 14px;
+  }
+
+  .tab-btn {
+    padding: 10px 12px;
+    font-size: 0.84rem;
+  }
+
+  .tab-panel {
+    padding: 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fc-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fc-actions .link-btn {
+    width: 100%;
+  }
+}

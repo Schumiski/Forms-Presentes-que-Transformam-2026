@@ -1,6 +1,6 @@
 // ============================================================
 // Presentes que Transformam — Página de Gestão
-// Lista os formulários preenchidos (planilha via Apps Script),
+// Dashboard, cards e registros (planilha via Apps Script),
 // com busca, filtro por status, alteração de status de
 // acompanhamento, visualização de detalhes e exportação CSV.
 //
@@ -17,6 +17,15 @@ const ADMIN_PASSWORD = "qBySKNe%fNwbqq";
 const ADMIN_TOKEN = "KLYeK5zKy328PcxD";
 
 const STATUSES = ["Novo", "Em contato", "Aprovado", "Concluído"];
+
+const STATUS_BADGES = {
+  "Novo": "s-novo",
+  "Em contato": "s-contato",
+  "Aprovado": "s-aprovado",
+  "Concluído": "s-concluido",
+};
+
+const PALETTE = ["#f57a1f", "#2f80ed", "#2e7d32", "#f2b705", "#d4885a", "#8b6240", "#b03a2e"];
 
 const GROUPS = [
   {
@@ -50,8 +59,16 @@ const esc = (value) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])
   );
 
-const toBrDate = (value) =>
-  /^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? String(value).split("-").reverse().join("/") : String(value ?? "");
+const toBrDate = (value) => {
+  const text = String(value ?? "");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text.split("-").reverse().join("/");
+  return text.replace(/^(\d{2}\/\d{2}\/\d{4}).*$/, "$1");
+};
+
+const parseBrDate = (value) => {
+  const match = String(value ?? "").match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  return match ? new Date(+match[3], +match[2] - 1, +match[1]) : null;
+};
 
 const buildUrl = (params) => `${APPS_SCRIPT_URL}?${new URLSearchParams(params).toString()}`;
 
@@ -59,6 +76,22 @@ const csvCell = (value) => {
   const text = String(value).replace(/"/g, '""');
   return /[;"\r\n]/.test(text) ? `"${text}"` : text;
 };
+
+const statusBadge = (status) => {
+  const cls = STATUS_BADGES[status] || "s-novo";
+  return `<span class="status-badge ${cls}">${esc(status)}</span>`;
+};
+
+const statusOptions = (status) => {
+  const options = STATUSES.includes(status) ? STATUSES : [status, ...STATUSES];
+  return options
+    .map((s) => `<option value="${esc(s)}" ${s === status ? "selected" : ""}>${esc(s)}</option>`)
+    .join("");
+};
+
+// ============================================================
+// Autenticação
+// ============================================================
 
 function showLogin() {
   $("adminView").hidden = true;
@@ -98,9 +131,12 @@ function initAuth() {
   });
 }
 
+// ============================================================
+// Dados
+// ============================================================
+
 function setLoading(loading) {
   $("loadingMsg").hidden = !loading;
-  $("tableWrap").hidden = loading;
 }
 
 async function loadData() {
@@ -118,7 +154,7 @@ async function loadData() {
     $("loadError").hidden = false;
   } finally {
     setLoading(false);
-    render();
+    renderAll();
   }
 }
 
@@ -135,7 +171,182 @@ function getFilteredRows() {
   });
 }
 
-function render() {
+// ============================================================
+// Dashboard
+// ============================================================
+
+function renderDashboard() {
+  const total = rows.length;
+  const counts = {};
+  STATUSES.forEach((s) => (counts[s] = 0));
+  rows.forEach((row) => {
+    counts[row.status] = (counts[row.status] || 0) + 1;
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcoming = rows.filter((row) => {
+    const date = parseBrDate(row.data["Data do evento"]);
+    return date && date >= today;
+  }).length;
+
+  const stats = [
+    { label: "Total de formulários", value: total, cls: "" },
+    { label: "Novos", value: counts["Novo"], cls: "" },
+    { label: "Em contato", value: counts["Em contato"], cls: "stat-blue" },
+    { label: "Aprovados", value: counts["Aprovado"], cls: "stat-green" },
+    { label: "Concluídos", value: counts["Concluído"], cls: "stat-gray" },
+    { label: "Eventos futuros", value: upcoming, cls: "stat-green" },
+  ];
+
+  $("statsGrid").innerHTML = stats
+    .map(
+      (stat) => `
+      <div class="stat-card ${stat.cls}">
+        <span class="stat-number">${stat.value}</span>
+        <span class="stat-label">${esc(stat.label)}</span>
+      </div>`
+    )
+    .join("");
+
+  renderChartConheceu();
+  renderChartMeses();
+  renderChartStatus();
+  renderChartPeriodo();
+}
+
+function countBy(rows, key) {
+  const counts = {};
+  rows.forEach((row) => {
+    const value = String(row.data[key] || "Não informado");
+    counts[value] = (counts[value] || 0) + 1;
+  });
+  return Object.entries(counts)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function hBarChart(el, entries) {
+  if (!entries.length) {
+    el.innerHTML = '<div class="chart-empty">Nenhum registro ainda.</div>';
+    return;
+  }
+  const max = entries[0].count || 1;
+  el.innerHTML = `
+    <div class="h-bar-chart">
+      ${entries
+        .map(
+          (entry, i) => `
+        <div class="h-bar-row">
+          <span class="h-bar-label">${esc(entry.label)}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill" style="width:${(entry.count / max) * 100}%;background:${PALETTE[i % PALETTE.length]}"></div>
+          </div>
+          <span class="h-bar-value">${entry.count}</span>
+        </div>`
+        )
+        .join("")}
+    </div>`;
+}
+
+const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+function vBarChart(el, counts) {
+  const max = Math.max(1, ...counts);
+  el.innerHTML = `
+    <div class="v-bar-chart">
+      ${counts
+        .map(
+          (count, i) => `
+        <div class="v-bar-col">
+          <span class="v-bar-value">${count}</span>
+          <div class="v-bar-fill" style="height:${(count / max) * 100}%;background:${PALETTE[i % PALETTE.length]}"></div>
+          <span class="v-bar-label">${MONTHS[i]}</span>
+        </div>`
+        )
+        .join("")}
+    </div>`;
+}
+
+function renderChartConheceu() {
+  hBarChart($("chartConheceu"), countBy(rows, "Como conheceu"));
+}
+
+function renderChartMeses() {
+  const counts = Array(12).fill(0);
+  rows.forEach((row) => {
+    const date = parseBrDate(row.data["Data/Hora"]);
+    if (date) counts[date.getMonth()]++;
+  });
+  vBarChart($("chartMeses"), counts);
+}
+
+function renderChartStatus() {
+  const entries = STATUSES.map((status) => ({
+    label: status,
+    count: rows.filter((row) => row.status === status).length,
+  })).filter((entry) => entry.count > 0);
+  hBarChart($("chartStatus"), entries);
+}
+
+function renderChartPeriodo() {
+  const counts = {};
+  rows.forEach((row) => {
+    const value = String(row.data["Período ativo"] || "Não informado");
+    counts[value] = (counts[value] || 0) + 1;
+  });
+  const entries = Object.entries(counts)
+    .map(([label, count]) => ({
+      label,
+      count,
+      order: parseInt(label, 10) || 999,
+    }))
+    .sort((a, b) => a.order - b.order || b.count - a.count);
+  hBarChart($("chartPeriodo"), entries);
+}
+
+// ============================================================
+// Cards
+// ============================================================
+
+function renderCards() {
+  $("cardsEmpty").hidden = rows.length > 0;
+  $("cardsGrid").innerHTML = rows
+    .map((row) => {
+      const d = row.data;
+      return `
+      <article class="form-card-item">
+        <div class="fc-head">
+          <div>
+            <p class="fc-kicker">${esc(d["Título do link"] || "Evento sem título")}</p>
+            <h3>${esc(d["Nome"] || "Sem nome")}</h3>
+          </div>
+          ${statusBadge(row.status)}
+        </div>
+        <dl class="fc-facts">
+          <div><dt>Data do evento</dt><dd>${esc(toBrDate(d["Data do evento"]) || "-")}</dd></div>
+          <div><dt>Ticket</dt><dd>${esc(d["Ticket"] || "-")}</dd></div>
+          <div><dt>Motivo</dt><dd>${esc(d["Motivo"] || "-")}</dd></div>
+          <div><dt>Cidade</dt><dd>${esc([d["Cidade"], d["Estado"]].filter(Boolean).join("/") || "-")}</dd></div>
+          <div><dt>E-mail</dt><dd>${esc(d["E-mail"] || "-")}</dd></div>
+          <div><dt>Celular</dt><dd>${esc(d["Celular"] || "-")}</dd></div>
+        </dl>
+        <div class="fc-actions">
+          <select class="status-select" data-row="${row.rowNumber}" aria-label="Status de ${esc(d["Nome"] || "resposta")}">
+            ${statusOptions(row.status)}
+          </select>
+          <button class="link-btn" type="button" data-detail="${row.rowNumber}">Ver detalhes</button>
+        </div>
+      </article>`;
+    })
+    .join("");
+}
+
+// ============================================================
+// Tabela
+// ============================================================
+
+function renderTable() {
   const filtered = getFilteredRows();
   const total = rows.length;
   $("rowCount").textContent = `${filtered.length} de ${total} ${total === 1 ? "formulário" : "formulários"}`;
@@ -147,7 +358,6 @@ function render() {
   $("responsesBody").innerHTML = filtered
     .map((row) => {
       const d = row.data;
-      const statusOptions = STATUSES.includes(row.status) ? STATUSES : [row.status, ...STATUSES];
       return `
         <tr>
           <td>${esc(d["Data/Hora"] || "")}</td>
@@ -157,16 +367,27 @@ function render() {
           <td>${esc(d["Título do link"] || "")}</td>
           <td>${esc(toBrDate(d["Data do evento"] || ""))}</td>
           <td>${esc(d["Ticket"] || "")}</td>
+          <td>${statusBadge(row.status)}</td>
           <td>
             <select class="status-select" data-row="${row.rowNumber}" aria-label="Status de ${esc(d["Nome"] || "resposta")}">
-              ${statusOptions.map((s) => `<option value="${esc(s)}" ${s === row.status ? "selected" : ""}>${esc(s)}</option>`).join("")}
+              ${statusOptions(row.status)}
             </select>
+            <button class="link-btn" type="button" data-detail="${row.rowNumber}">Ver</button>
           </td>
-          <td><button class="link-btn" type="button" data-detail="${row.rowNumber}">Ver</button></td>
         </tr>`;
     })
     .join("");
 }
+
+function renderAll() {
+  renderDashboard();
+  renderCards();
+  renderTable();
+}
+
+// ============================================================
+// Detalhes (modal)
+// ============================================================
 
 function openDetail(rowNumber) {
   const row = rows.find((r) => r.rowNumber === rowNumber);
@@ -198,6 +419,31 @@ function closeDetail() {
   document.body.style.overflow = "";
 }
 
+// ============================================================
+// Ações
+// ============================================================
+
+function updateStatus(rowNumber, status, select) {
+  const previous = rows.find((r) => r.rowNumber === rowNumber)?.status || "Novo";
+  select.disabled = true;
+
+  fetch(buildUrl({ action: "update_status", row: rowNumber, status, token: ADMIN_TOKEN }), { method: "POST" })
+    .then((response) => response.json())
+    .then((json) => {
+      if (!json.ok) throw new Error(json.error || "Falha ao atualizar o status.");
+      const target = rows.find((r) => r.rowNumber === rowNumber);
+      if (target) target.status = status;
+    })
+    .catch(() => {
+      select.value = previous;
+      alert("Não foi possível atualizar o status. Tente novamente.");
+    })
+    .finally(() => {
+      select.disabled = false;
+      renderAll();
+    });
+}
+
 function exportCsv() {
   const filtered = getFilteredRows();
   if (!filtered.length) {
@@ -218,33 +464,33 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
+// ============================================================
+// Eventos e inicialização
+// ============================================================
+
+function initTabs() {
+  const buttons = [...document.querySelectorAll(".tab-btn")];
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      buttons.forEach((b) => {
+        b.classList.toggle("active", b === button);
+        b.setAttribute("aria-selected", String(b === button));
+      });
+      ["dashboard", "cards", "registros"].forEach((tab) => {
+        $("panel" + tab[0].toUpperCase() + tab.slice(1)).hidden = tab !== button.dataset.tab;
+      });
+    });
+  });
+}
+
 function initEvents() {
-  $("responsesBody").addEventListener("change", (event) => {
+  document.addEventListener("change", (event) => {
     const select = event.target.closest(".status-select");
     if (!select) return;
-    const rowNumber = Number(select.dataset.row);
-    const status = select.value;
-    const previous = rows.find((r) => r.rowNumber === rowNumber)?.status || "Novo";
-    select.disabled = true;
-
-    fetch(buildUrl({ action: "update_status", row: rowNumber, status, token: ADMIN_TOKEN }), { method: "POST" })
-      .then((response) => response.json())
-      .then((json) => {
-        if (!json.ok) throw new Error(json.error || "Falha ao atualizar o status.");
-        const target = rows.find((r) => r.rowNumber === rowNumber);
-        if (target) target.status = status;
-      })
-      .catch(() => {
-        select.value = previous;
-        alert("Não foi possível atualizar o status. Tente novamente.");
-      })
-      .finally(() => {
-        select.disabled = false;
-        render();
-      });
+    updateStatus(Number(select.dataset.row), select.value, select);
   });
 
-  $("responsesBody").addEventListener("click", (event) => {
+  document.addEventListener("click", (event) => {
     const button = event.target.closest("[data-detail]");
     if (!button) return;
     openDetail(Number(button.dataset.detail));
@@ -252,12 +498,12 @@ function initEvents() {
 
   $("searchInput").addEventListener("input", (event) => {
     searchTerm = event.target.value;
-    render();
+    renderTable();
   });
 
   $("statusFilter").addEventListener("change", (event) => {
     statusFilter = event.target.value;
-    render();
+    renderTable();
   });
 
   $("refreshBtn").addEventListener("click", loadData);
@@ -275,6 +521,7 @@ function initEvents() {
   $("statusFilter").innerHTML =
     '<option value="">Todos os status</option>' +
     STATUSES.map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  initTabs();
   initAuth();
   initEvents();
 })();
