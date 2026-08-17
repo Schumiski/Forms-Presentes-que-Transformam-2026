@@ -299,4 +299,17 @@ tbody tr:hover {
   .admin-header-actions .link-btn {
     flex: 1;
   }
+
+  table {
+    font-size: 0.82rem;
+  }
+
+  thead th,
+  tbody td {
+    padding: 8px 10px;
+  }
+
+  .status-select {
+    max-width: 100%;
+  }
 }
