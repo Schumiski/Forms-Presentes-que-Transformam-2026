@@ -1530,3 +1530,161 @@ h1 {
     opacity: 0.9;
   }
 }
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  animation: page-enter 0.45s ease-out;
+}
+
+body.page-leaving {
+  animation: none;
+  transition: opacity 0.4s ease-in;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+
+  body.page-leaving {
+    transition: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .stage-2 {
+    background-image: none;
+    background: linear-gradient(180deg, #fdf7ea 0%, #f4e5c8 55%, #edd3ae 100%);
+  }
+}
+
+@media (max-width: 640px) {
+  .stage-1 {
+    background-image: none;
+    background: linear-gradient(180deg, #fffaf0 0%, #f7ecd7 55%, #f0dcc0 100%);
+  }
+
+  .stage-1 .page-shell {
+    padding: 0;
+  }
+
+  .stage-1 .parchment-card {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transform: none;
+    padding: clamp(16px, 3vh, 24px) 20px;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    background: linear-gradient(180deg, #fffaf0 0%, #f7ecd7 45%, #f0dcc0 100%);
+    backdrop-filter: none;
+  }
+
+  .stage-1 .parchment-card::before,
+  .stage-1 .parchment-card::after {
+    display: none;
+  }
+
+  .stage-1 .page-kicker-img {
+    width: min(90px, 22vw, 12vh);
+    margin-bottom: 8px;
+  }
+
+  .stage-1 .parchment-card h1 {
+    font-size: clamp(1.3rem, 4.4vh, 2.8rem);
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+
+  .stage-1 .parchment-card .intro-copy {
+    flex: none;
+    overflow: visible;
+    font-size: clamp(0.7rem, 1.8vh, 1rem);
+    line-height: 1.4;
+  }
+
+  .stage-1 .parchment-card .intro-copy p {
+    margin-bottom: 7px;
+  }
+
+  .stage-1 .parchment-card .page-footer {
+    flex: none;
+    margin-top: 12px;
+    padding-top: 0;
+  }
+
+  .stage-2 .form-intro-card {
+    padding: 20px 16px;
+  }
+
+  .stage-2 .form-intro-card h1 {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+  }
+
+  .stage-2 .form-card {
+    padding: 14px 12px;
+    backdrop-filter: none;
+  }
+
+  .stage-2 .form-block {
+    padding: 14px 12px;
+  }
+
+  .stage-2 .gift-form {
+    gap: 12px;
+  }
+
+  .stage-2 .form-grid {
+    gap: 12px;
+  }
+
+  .stage-2 .form-grid input,
+  .stage-2 .form-grid select,
+  .stage-2 .field-stack select,
+  .stage-2 .conditional-field input {
+    font-size: 16px;
+    padding: 13px 12px;
+  }
+
+  .stage-2 .form-shell {
+    padding-bottom: 96px;
+  }
+
+  .stage-2 .form-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255, 251, 242, 0.94);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(201, 146, 71, 0.25);
+    box-shadow: 0 -8px 24px rgba(128, 88, 49, 0.12);
+    z-index: 40;
+  }
+
+  .stage-2 .form-actions .submit-btn {
+    width: 100%;
+  }
+}

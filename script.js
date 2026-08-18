@@ -1,6 +1,16 @@
 // URL do aplicativo web do Google Apps Script (cole após a implantação)
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDfeoMtY64rhx5zSY5Bzcx5xKS8ad3k2aA7F3jNe8pJkUNzpq8xPWpZ4mJC_JNldl65w/exec";
 
+// Transição suave entre etapas
+const TRANSITION_MS = 400;
+
+const navigateWithTransition = (url) => {
+  document.body.classList.add("page-leaving");
+  setTimeout(() => {
+    window.location.href = url;
+  }, TRANSITION_MS);
+};
+
 // Acesso rápido ao painel de gestão (admin.html):
 // 1. Atalho de teclado: Ctrl+Shift+A
 // 2. Clique 5 vezes rapidamente no texto "Amigos do Bem"
@@ -31,7 +41,7 @@ const continueBtn = document.getElementById("continueBtn");
 
 if (continueBtn) {
   continueBtn.addEventListener("click", () => {
-    window.location.href = "etapa-2.html";
+    navigateWithTransition("etapa-2.html");
   });
 }
 
@@ -282,7 +292,7 @@ if (pqtForm) {
         body: JSON.stringify(payload),
       });
 
-      window.location.href = "etapa-3.html";
+      navigateWithTransition("etapa-3.html");
     } catch {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
