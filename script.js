@@ -23,20 +23,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-let kickerClicks = 0;
-let kickerTimer = null;
-document.addEventListener("click", (event) => {
-  const kicker = event.target.closest(".page-kicker");
-  if (!kicker) return;
-  kickerClicks++;
-  clearTimeout(kickerTimer);
-  kickerTimer = setTimeout(() => (kickerClicks = 0), 1500);
-  if (kickerClicks >= 5) {
-    kickerClicks = 0;
-    openAdmin();
-  }
-});
-
 const continueBtn = document.getElementById("continueBtn");
 
 if (continueBtn) {
@@ -48,6 +34,7 @@ if (continueBtn) {
 const pqtForm = document.getElementById("pqtForm");
 
 if (pqtForm) {
+  const pqtStartedAt = Date.now();
   const motivoRadios = [...pqtForm.querySelectorAll('input[name="motivo"]')];
   const motivoOutroWrap = document.getElementById("motivoOutroWrap");
   const motivoOutro = document.getElementById("motivoOutro");
@@ -285,10 +272,11 @@ if (pqtForm) {
 
     try {
       const payload = Object.fromEntries(new FormData(pqtForm).entries());
+      payload.fill_ms = Date.now() - pqtStartedAt;
       const response = await fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: JSON.stringify(payload),
       });
 

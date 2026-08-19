@@ -4,17 +4,22 @@
 // com busca, filtro por status, alteração de status de
 // acompanhamento, visualização de detalhes e exportação CSV.
 //
+// SEGURANÇA:
+// - Nenhuma senha ou token estático fica neste arquivo.
+// - O login é validado pelo Apps Script (server-side) e retorna
+//   um token de sessão temporário (30 min).
+// - Todas as chamadas usam POST com corpo JSON
+//   (Content-Type text/plain evita o CORS preflight).
+//
 // COMO CONFIGURAR:
 // 1. Implante o apps-script.gs como aplicativo da web
 //    (Executar como: "Eu" / Quem tem acesso: "Qualquer pessoa")
 // 2. Copie a URL da implantação na constante APPS_SCRIPT_URL
-// 3. Altere ADMIN_PASSWORD (senha de acesso à página)
-// 4. Defina o mesmo valor em ADMIN_TOKEN aqui e no apps-script.gs
+// 3. No Apps Script, execute uma vez: configureAdminPassword("senha")
+// 4. Publique a pasta ou abra admin.html em um navegador
 // ============================================================
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDfeoMtY64rhx5zSY5Bzcx5xKS8ad3k2aA7F3jNe8pJkUNzpq8xPWpZ4mJC_JNldl65w/exec";
-const ADMIN_PASSWORD = "qBySKNe%fNwbqq";
-const ADMIN_TOKEN = "KLYeK5zKy328PcxD";
 
 const STATUSES = ["Novo", "Em contato", "Aprovado", "Concluído"];
 
@@ -46,7 +51,8 @@ const GROUPS = [
   },
 ];
 
-const SESSION_KEY = "pqtAdminAuthed";
+const SESSION_KEY = "pqtAdminToken";
+let sessionToken = sessionStorage.getItem(SESSION_KEY) || "";
 
 let rows = [];
 let searchTerm = "";
@@ -70,8 +76,6 @@ const parseBrDate = (value) => {
   return match ? new Date(+match[3], +match[2] - 1, +match[1]) : null;
 };
 
-const buildUrl = (params) => `${APPS_SCRIPT_URL}?${new URLSearchParams(params).toString()}`;
-
 const csvCell = (value) => {
   const text = String(value).replace(/"/g, '""');
   return /[;"\r\n]/.test(text) ? `"${text}"` : text;
@@ -90,6 +94,45 @@ const statusOptions = (status) => {
 };
 
 // ============================================================
+// API (Apps Script)
+// Todas as chamadas via POST com corpo JSON. O Content-Type
+// text/plain evita o CORS preflight; o Apps Script lê o corpo
+// bruto (e.postData.contents) independentemente do cabeçalho.
+// ============================================================
+
+async function api(action, payload = {}) {
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify({
+      action,
+      ...payload,
+      ...(sessionToken ? { token: sessionToken } : {}),
+    }),
+  });
+
+  const json = await response.json().catch(() => ({}));
+
+  if (!json.ok) {
+    if (json.code === "session_expired") {
+      endSession("Sua sessão expirou. Faça login novamente.");
+    }
+    throw new Error(json.error || "Falha na requisição.");
+  }
+  return json;
+}
+
+function endSession(message) {
+  sessionToken = "";
+  sessionStorage.removeItem(SESSION_KEY);
+  if (message) {
+    $("loginError").textContent = message;
+    $("loginError").hidden = false;
+  }
+  showLogin();
+}
+
+// ============================================================
 // Autenticação
 // ============================================================
 
@@ -105,29 +148,51 @@ function showAdmin() {
   loadData();
 }
 
-function initAuth() {
-  if (sessionStorage.getItem(SESSION_KEY) === "1") {
-    showAdmin();
-  } else {
+async function tryRestoreSession() {
+  if (!sessionToken) {
     showLogin();
+    return;
   }
+  try {
+    await loadData();
+    showAdmin();
+  } catch (err) {
+    // 401 já foi tratado em api() -> endSession(); outros erros
+    // são exibidos em loadError quando o painel abrir.
+  }
+}
 
-  $("loginForm").addEventListener("submit", (event) => {
+function initAuth() {
+  $("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    if ($("loginPassword").value === ADMIN_PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY, "1");
-      $("loginError").hidden = true;
+    const submitBtn = $("loginForm").querySelector("button[type='submit']");
+    const password = $("loginPassword").value;
+    if (!password) return;
+
+    submitBtn.disabled = true;
+    $("loginError").hidden = true;
+    try {
+      const json = await api("login", { password });
+      sessionToken = json.token;
+      sessionStorage.setItem(SESSION_KEY, sessionToken);
       $("loginPassword").value = "";
       showAdmin();
-    } else {
+    } catch (err) {
+      $("loginError").textContent = err.message || "Não foi possível entrar.";
       $("loginError").hidden = false;
       $("loginPassword").select();
+    } finally {
+      submitBtn.disabled = false;
     }
   });
 
-  $("logoutBtn").addEventListener("click", () => {
-    sessionStorage.removeItem(SESSION_KEY);
-    showLogin();
+  $("logoutBtn").addEventListener("click", async () => {
+    try {
+      await api("logout");
+    } catch (err) {
+      // ignora falhas no logout; a sessão local é limpa mesmo assim
+    }
+    endSession();
   });
 }
 
@@ -143,9 +208,7 @@ async function loadData() {
   setLoading(true);
   $("loadError").hidden = true;
   try {
-    const response = await fetch(buildUrl({ action: "list", token: ADMIN_TOKEN }));
-    const json = await response.json();
-    if (!json.ok) throw new Error(json.error || "Falha ao carregar os dados.");
+    const json = await api("list");
     rows = json.rows || [];
   } catch (err) {
     rows = [];
@@ -423,25 +486,23 @@ function closeDetail() {
 // Ações
 // ============================================================
 
-function updateStatus(rowNumber, status, select) {
+async function updateStatus(rowNumber, status, select) {
   const previous = rows.find((r) => r.rowNumber === rowNumber)?.status || "Novo";
   select.disabled = true;
 
-  fetch(buildUrl({ action: "update_status", row: rowNumber, status, token: ADMIN_TOKEN }), { method: "POST" })
-    .then((response) => response.json())
-    .then((json) => {
-      if (!json.ok) throw new Error(json.error || "Falha ao atualizar o status.");
-      const target = rows.find((r) => r.rowNumber === rowNumber);
-      if (target) target.status = status;
-    })
-    .catch(() => {
-      select.value = previous;
+  try {
+    await api("update_status", { row: rowNumber, status });
+    const target = rows.find((r) => r.rowNumber === rowNumber);
+    if (target) target.status = status;
+  } catch (err) {
+    select.value = previous;
+    if (sessionToken) {
       alert("Não foi possível atualizar o status. Tente novamente.");
-    })
-    .finally(() => {
-      select.disabled = false;
-      renderAll();
-    });
+    }
+  } finally {
+    select.disabled = false;
+    renderAll();
+  }
 }
 
 function exportCsv() {
@@ -524,4 +585,5 @@ function initEvents() {
   initTabs();
   initAuth();
   initEvents();
+  tryRestoreSession();
 })();

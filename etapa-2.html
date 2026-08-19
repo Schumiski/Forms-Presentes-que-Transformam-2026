@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://script.google.com https://viacep.com.br; object-src 'none'; base-uri 'self'; form-action 'self'"
+  />
   <title>Presentes que Transformam | Formulário</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -19,6 +24,16 @@
 
     <section class="form-card">
       <form id="pqtForm" class="gift-form">
+        <input
+          type="text"
+          name="website"
+          id="website"
+          class="hp-field"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none"
+        />
         <fieldset class="form-block">
           <legend>Sobre você</legend>
 
