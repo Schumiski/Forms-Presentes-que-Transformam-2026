@@ -11,6 +11,12 @@ const navigateWithTransition = (url) => {
   }, TRANSITION_MS);
 };
 
+// Ao voltar a página (botão voltar/bfcache), remove o estado de saída;
+// sem isso o <body> permanece com opacity: 0 e o card inicial "não aparece".
+window.addEventListener("pageshow", () => {
+  document.body.classList.remove("page-leaving");
+});
+
 // Acesso rápido ao painel de gestão (admin.html):
 // 1. Atalho de teclado: Ctrl+Shift+A
 // 2. Clique 5 vezes rapidamente no texto "Amigos do Bem"
