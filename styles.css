@@ -252,8 +252,14 @@ h1 {
 .form-grid label,
 .field-stack,
 .nested-block {
-  display: grid;
+  display: inline;
   gap: 8px;
+}
+
+.form-block .field-stack + .field-stack,
+.form-grid + .field-stack {
+  display: block;
+  margin-top: 16px;
 }
 
 .form-grid label,
@@ -273,6 +279,7 @@ h1 {
   background: rgba(255, 255, 255, 0.92);
   padding: 12px 14px;
   font: inherit;
+  font-weight: normal;
   color: var(--ink);
 }
 
@@ -718,8 +725,14 @@ h1 {
 .form-grid label,
 .field-stack,
 .nested-block {
-  display: grid;
+  display: inline;
   gap: 8px;
+}
+
+.form-block .field-stack + .field-stack,
+.form-grid + .field-stack {
+  display: block;
+  margin-top: 16px;
 }
 
 .form-grid label,
@@ -740,6 +753,7 @@ h1 {
   background: rgba(10, 10, 10, 0.82);
   padding: 12px 14px;
   font: inherit;
+  font-weight: normal;
   color: var(--ink);
 }
 
@@ -1294,7 +1308,7 @@ h1 {
 .nested-block h3 {
   padding: 0 10px;
   font-weight: 700;
-  color: #c45d15;
+  color: #5b361d;
 }
 
 .form-grid {
@@ -1306,11 +1320,21 @@ h1 {
 .form-grid label,
 .field-stack,
 .nested-block {
-  display: grid;
+  display: inline;
   gap: 8px;
 }
 
-.form-grid label,
+.form-block .field-stack + .field-stack,
+.form-grid + .field-stack {
+  display: block;
+  margin-top: 16px;
+}
+
+.form-grid label {
+  color: #c45d15;
+  font-weight: 700;
+}
+
 .field-stack,
 .nested-note,
 .nested-block p,
@@ -1328,6 +1352,7 @@ h1 {
   background: rgba(255, 252, 246, 0.96);
   padding: 12px 14px;
   font: inherit;
+  font-weight: normal;
   color: #5a3720;
 }
 

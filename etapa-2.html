@@ -39,22 +39,22 @@
 
           <div class="form-grid two-columns">
             <label>
-              Nome
+              Nome <span style="color: red;">*</span>
               <input type="text" name="nome" id="nome" autocomplete="name" placeholder="Nome completo" required />
             </label>
 
             <div class="field-stack">
-              <span class="field-label">Como conheceu os Amigos do Bem?</span>
-              <select name="como_conheceu" id="comoConheceu" required>
-                <option value="">Selecione</option>
-                <option>Redes Sociais</option>
-                <option>Evento/Palestra</option>
-                <option>Site Institucional</option>
-                <option>Televisão/Reportagem</option>
-                <option>Jornal/Revista</option>
-                <option>Outros</option>
-                <option>Indicação de Amigos/Família</option>
-              </select>
+            <span class="field-label">Como conheceu os Amigos do Bem? <span style="color: red;">*</span></span>
+            <select name="como_conheceu" id="comoConheceu" required>
+              <option value="">Selecione</option>
+              <option>Redes Sociais</option>
+              <option>Evento/Palestra</option>
+              <option>Site Institucional</option>
+              <option>Televisão/Reportagem</option>
+              <option>Jornal/Revista</option>
+              <option>Outros</option>
+              <option>Indicação de Amigos/Família</option>
+            </select>
             </div>
           </div>
 
@@ -67,7 +67,7 @@
 
           <div class="form-grid two-columns">
             <label>
-              Telefone celular
+              Telefone celular <span style="color: red;">*</span>
               <input type="tel" name="celular" id="celular" autocomplete="tel" placeholder="(00) 00000-0000" required />
             </label>
 
@@ -79,12 +79,12 @@
 
           <div class="form-grid two-columns">
             <label>
-              E-mail
+              E-mail <span style="color: red;">*</span>
               <input type="email" name="email" id="email" autocomplete="email" placeholder="voce@exemplo.com" required />
             </label>
 
             <label>
-              CPF
+              CPF <span style="color: red;">*</span>
               <input type="text" name="cpf" id="cpf" inputmode="numeric" placeholder="000.000.000-00" required />
             </label>
           </div>
@@ -97,51 +97,51 @@
             <p class="address-note">Informe o CEP para preencher rua, bairro, cidade e estado automaticamente.</p>
 
             <div class="form-grid three-columns">
-              <label>
-                CEP
-                <input type="text" name="cep" id="mainCep" autocomplete="postal-code" inputmode="numeric" placeholder="00000-000" required />
-              </label>
+            <label>
+              CEP <span style="color: red;">*</span>
+              <input type="text" name="cep" id="mainCep" autocomplete="postal-code" inputmode="numeric" placeholder="00000-000" required />
+            </label>
 
-              <label class="span-2">
-                Rua
-                <input type="text" name="rua" id="mainRua" autocomplete="street-address" placeholder="Nome da rua" required />
-              </label>
+            <label class="span-2">
+              Rua <span style="color: red;">*</span>
+              <input type="text" name="rua" id="mainRua" autocomplete="street-address" placeholder="Nome da rua" required />
+            </label>
             </div>
 
             <div class="form-grid three-columns">
-              <label>
-                Número
-                <input type="text" name="numero" id="mainNumero" autocomplete="off" placeholder="123" required />
-              </label>
+            <label>
+              Número <span style="color: red;">*</span>
+              <input type="text" name="numero" id="mainNumero" autocomplete="off" placeholder="123" required />
+            </label>
 
               <label>
                 Complemento
                 <input type="text" name="complemento" id="mainComplemento" autocomplete="address-line2" placeholder="Apto, bloco, referência" />
               </label>
 
-              <label>
-                Bairro
-                <input type="text" name="bairro" id="mainBairro" autocomplete="address-level3" placeholder="Bairro" required />
-              </label>
+            <label>
+              Bairro <span style="color: red;">*</span>
+              <input type="text" name="bairro" id="mainBairro" autocomplete="address-level3" placeholder="Bairro" required />
+            </label>
             </div>
 
             <div class="form-grid two-columns">
-              <label>
-                Cidade
-                <input type="text" name="cidade" id="mainCidade" autocomplete="address-level2" placeholder="Cidade" required />
-              </label>
+            <label>
+              Cidade <span style="color: red;">*</span>
+              <input type="text" name="cidade" id="mainCidade" autocomplete="address-level2" placeholder="Cidade" required />
+            </label>
 
-              <label>
-                Estado
-                <select name="estado" id="mainEstado" autocomplete="address-level1" required>
-                  <option value="">Selecione</option>
-                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
-                  <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-                  <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
-                  <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-                  <option>SP</option><option>SE</option><option>TO</option>
-                </select>
-              </label>
+            <label>
+              Estado <span style="color: red;">*</span>
+              <select name="estado" id="mainEstado" autocomplete="address-level1" required>
+                <option value="">Selecione</option>
+                <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
+                <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
+                <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                <option>SP</option><option>SE</option><option>TO</option>
+              </select>
+            </label>
             </div>
           </div>
         </fieldset>
@@ -150,7 +150,7 @@
           <legend>Sobre o evento</legend>
 
           <div class="field-stack">
-            <span class="field-label">Motivo</span>
+            <span class="field-label">Motivo <span style="color: red;">*</span></span>
             <div class="chip-group" role="radiogroup" aria-label="Motivo do evento">
               <label class="chip"><input type="radio" name="motivo" value="Aniversário" required /> Aniversário</label>
               <label class="chip"><input type="radio" name="motivo" value="Casamento" /> Casamento</label>
@@ -168,7 +168,7 @@
           </div>
 
           <div class="field-stack">
-            <span class="field-label">O evento é para você?</span>
+            <span class="field-label">O evento é para você? <span style="color: red;">*</span></span>
             <div class="chip-group" role="radiogroup" aria-label="Evento para você">
               <label class="chip"><input type="radio" name="evento_para" value="Sim" required /> Sim</label>
               <label class="chip"><input type="radio" name="evento_para" value="Não" /> Não</label>
@@ -180,22 +180,22 @@
             <p class="nested-note">Preencha os dados da pessoa homenageada com o mesmo cuidado do bloco anterior.</p>
 
             <div class="form-grid two-columns">
-              <label>
-                Nome
-                <input type="text" name="h_nome" id="hNome" autocomplete="name" placeholder="Nome completo" required />
-              </label>
+            <label>
+              Nome <span style="color: red;">*</span>
+              <input type="text" name="h_nome" id="hNome" autocomplete="name" placeholder="Nome completo" required />
+            </label>
 
-              <label>
-                Como conheceu os Amigos do Bem?
-                <input type="text" name="h_como_conheceu" id="hComoConheceu" placeholder="Ex.: indicação, evento, redes sociais" required />
-              </label>
+            <label>
+              Como conheceu os Amigos do Bem? <span style="color: red;">*</span>
+              <input type="text" name="h_como_conheceu" id="hComoConheceu" placeholder="Ex.: indicação, evento, redes sociais" required />
+            </label>
             </div>
 
             <div class="form-grid two-columns">
-              <label>
-                Telefone celular
-                <input type="tel" name="h_celular" id="hCelular" autocomplete="tel" placeholder="(00) 00000-0000" required />
-              </label>
+            <label>
+              Telefone celular <span style="color: red;">*</span>
+              <input type="tel" name="h_celular" id="hCelular" autocomplete="tel" placeholder="(00) 00000-0000" required />
+            </label>
 
               <label>
                 Telefone celular 2 (opcional)
@@ -204,15 +204,15 @@
             </div>
 
             <div class="form-grid two-columns">
-              <label>
-                E-mail
-                <input type="email" name="h_email" id="hEmail" autocomplete="email" placeholder="voce@exemplo.com" required />
-              </label>
+            <label>
+              E-mail <span style="color: red;">*</span>
+              <input type="email" name="h_email" id="hEmail" autocomplete="email" placeholder="voce@exemplo.com" required />
+            </label>
 
-              <label>
-                CPF
-                <input type="text" name="h_cpf" id="hCpf" inputmode="numeric" placeholder="000.000.000-00" required />
-              </label>
+            <label>
+              CPF <span style="color: red;">*</span>
+              <input type="text" name="h_cpf" id="hCpf" inputmode="numeric" placeholder="000.000.000-00" required />
+            </label>
             </div>
 
             <div class="address-box">
@@ -223,69 +223,69 @@
               <p class="address-note">Informe o CEP para preencher rua, bairro, cidade e estado automaticamente.</p>
 
               <div class="form-grid three-columns">
-                <label>
-                  CEP
-                  <input type="text" name="h_cep" id="hCep" autocomplete="postal-code" inputmode="numeric" placeholder="00000-000" required />
-                </label>
+            <label>
+              CEP <span style="color: red;">*</span>
+              <input type="text" name="h_cep" id="hCep" autocomplete="postal-code" inputmode="numeric" placeholder="00000-000" required />
+            </label>
 
-                <label class="span-2">
-                  Rua
-                  <input type="text" name="h_rua" id="hRua" autocomplete="street-address" placeholder="Nome da rua" required />
-                </label>
+            <label class="span-2">
+              Rua <span style="color: red;">*</span>
+              <input type="text" name="h_rua" id="hRua" autocomplete="street-address" placeholder="Nome da rua" required />
+            </label>
               </div>
 
               <div class="form-grid three-columns">
-                <label>
-                  Número
-                  <input type="text" name="h_numero" id="hNumero" autocomplete="off" placeholder="123" required />
-                </label>
+            <label>
+              Número <span style="color: red;">*</span>
+              <input type="text" name="h_numero" id="hNumero" autocomplete="off" placeholder="123" required />
+            </label>
 
                 <label>
                   Complemento
                   <input type="text" name="h_complemento" id="hComplemento" autocomplete="address-line2" placeholder="Apto, bloco, referência" />
                 </label>
 
-                <label>
-                  Bairro
-                  <input type="text" name="h_bairro" id="hBairro" autocomplete="address-level3" placeholder="Bairro" required />
-                </label>
+            <label>
+              Bairro <span style="color: red;">*</span>
+              <input type="text" name="h_bairro" id="hBairro" autocomplete="address-level3" placeholder="Bairro" required />
+            </label>
               </div>
 
               <div class="form-grid two-columns">
-                <label>
-                  Cidade
-                  <input type="text" name="h_cidade" id="hCidade" autocomplete="address-level2" placeholder="Cidade" required />
-                </label>
+            <label>
+              Cidade <span style="color: red;">*</span>
+              <input type="text" name="h_cidade" id="hCidade" autocomplete="address-level2" placeholder="Cidade" required />
+            </label>
 
-                <label>
-                  Estado
-                  <select name="h_estado" id="hEstado" autocomplete="address-level1" required>
-                    <option value="">Selecione</option>
-                    <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
-                    <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-                    <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
-                    <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-                    <option>SP</option><option>SE</option><option>TO</option>
-                  </select>
-                </label>
+            <label>
+              Estado <span style="color: red;">*</span>
+              <select name="h_estado" id="hEstado" autocomplete="address-level1" required>
+                <option value="">Selecione</option>
+                <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
+                <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
+                <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                <option>SP</option><option>SE</option><option>TO</option>
+              </select>
+            </label>
               </div>
             </div>
           </section>
 
           <div class="form-grid two-columns">
             <label>
-              Título da Página Personalizada
+              Título da Página Personalizada <span style="color: red;">*</span>
               <input type="text" name="titulo_link" id="tituloLink" placeholder="Ex.: Festa da Maria" required />
             </label>
 
             <label>
-              Data do evento
+              Data do evento <span style="color: red;">*</span>
               <input type="date" name="data_evento" id="dataEvento" required />
             </label>
           </div>
 
           <div class="field-stack">
-            <span class="field-label">Período em que o link permanece ativo</span>
+            <span class="field-label">Período em que o link permanece ativo <span style="color: red;">*</span></span>
             <div class="chip-group" role="radiogroup" aria-label="Período ativo">
               <label class="chip"><input type="radio" name="periodo" value="7 dias" required /> 7 dias</label>
               <label class="chip"><input type="radio" name="periodo" value="14 dias" /> 14 dias</label>
@@ -300,7 +300,7 @@
           </div>
 
           <div class="field-stack">
-            <span class="field-label">Valor mínimo da doação</span>
+            <span class="field-label">Valor mínimo da doação <span style="color: red;">*</span></span>
             <div class="chip-group" role="radiogroup" aria-label="Ticket do presente">
               <label class="chip"><input type="radio" name="ticket" value="R$30,00" required /> R$30,00</label>
               <label class="chip"><input type="radio" name="ticket" value="R$50,00" /> R$50,00</label>
