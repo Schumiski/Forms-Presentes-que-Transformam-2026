@@ -1,6 +1,51 @@
 // URL do aplicativo web do Google Apps Script (cole após a implantação)
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDfeoMtY64rhx5zSY5Bzcx5xKS8ad3k2aA7F3jNe8pJkUNzpq8xPWpZ4mJC_JNldl65w/exec";
 
+const PENDING_KEY = "pqt_pending_submissions";
+
+const getPending = () => {
+  try {
+    return JSON.parse(localStorage.getItem(PENDING_KEY)) || [];
+  } catch {
+    return [];
+  }
+};
+
+const savePending = (payload) => {
+  const pending = getPending();
+  pending.push(payload);
+  localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
+};
+
+const removePending = (index) => {
+  const pending = getPending();
+  pending.splice(index, 1);
+  if (pending.length === 0) {
+    localStorage.removeItem(PENDING_KEY);
+  } else {
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
+  }
+};
+
+const retryPending = async () => {
+  const pending = getPending();
+  if (pending.length === 0) return;
+
+  for (let i = pending.length - 1; i >= 0; i--) {
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify(pending[i]),
+      });
+      removePending(i);
+    } catch {
+      // mantém na fila para próxima tentativa
+    }
+  }
+};
+
 // Transição suave entre etapas
 const TRANSITION_MS = 400;
 
@@ -15,6 +60,7 @@ const navigateWithTransition = (url) => {
 // sem isso o <body> permanece com opacity: 0 e o card inicial "não aparece".
 window.addEventListener("pageshow", () => {
   document.body.classList.remove("page-leaving");
+  retryPending();
 });
 
 // Acesso rápido ao painel de gestão (admin.html):
@@ -279,18 +325,32 @@ if (pqtForm) {
     try {
       const payload = Object.fromEntries(new FormData(pqtForm).entries());
       payload.fill_ms = Date.now() - pqtStartedAt;
-      const response = await fetch(APPS_SCRIPT_URL, {
+
+      savePending(payload);
+      const pendingIndex = getPending().length - 1;
+
+      const sendToAppsScript = fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: JSON.stringify(payload),
       });
 
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 3000)
+      );
+
+      await Promise.race([sendToAppsScript, timeout]);
+      removePending(pendingIndex);
       navigateWithTransition("etapa-3.html");
-    } catch {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalLabel;
-      alert("Não foi possível enviar o formulário. Verifique sua conexão e tente novamente.");
+    } catch (error) {
+      if (error.message === "timeout") {
+        navigateWithTransition("etapa-3.html");
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+        alert("Não foi possível enviar o formulário. Verifique sua conexão e tente novamente.");
+      }
     }
   });
 
