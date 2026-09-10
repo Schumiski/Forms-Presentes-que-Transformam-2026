@@ -1064,6 +1064,14 @@ body::after {
   backdrop-filter: blur(8px) saturate(115%);
 }
 
+.stage-2 .form-intro-card {
+  text-align: center;
+}
+
+.stage-2 .form-intro-card p {
+  margin-inline: auto;
+}
+
 input[type="date"] {
   color-scheme: light;
 }
