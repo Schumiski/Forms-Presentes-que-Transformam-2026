@@ -36,6 +36,9 @@ Abra `index.html` em um navegador ou publique a pasta no GitHub Pages.
 O formulário também coleta o nome do cônjuge quando o motivo é casamento ou bodas.
 Esse campo é salvo na coluna `Nome do cônjuge` da aba `Respostas`.
 
+As validações impedem o envio quando o telefone ou CEP estão incompletos, quando o
+valor aberto é zero ou quando as datas do evento e do período são incoerentes.
+
 ## Segurança
 
 - **Login validado no servidor (Apps Script)** — nenhuma senha ou token fica no código

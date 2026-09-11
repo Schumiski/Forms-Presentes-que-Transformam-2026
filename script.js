@@ -172,6 +172,22 @@ if (pqtForm) {
     }
     return digits.replace(/^(\d{2})(\d{5})(\d{0,4})$/, "($1) $2-$3").replace(/-$/, "");
   };
+  const validatePhoneField = (field) => {
+    const digits = field.value.replace(/\D/g, "");
+    if (!field.value && !field.required) {
+      field.setCustomValidity("");
+      return;
+    }
+    field.setCustomValidity(
+      digits.length >= 10 && digits.length <= 11
+        ? ""
+        : "Informe um telefone válido com DDD."
+    );
+  };
+  const validateCepField = (field) => {
+    const digits = field.value.replace(/\D/g, "");
+    field.setCustomValidity(digits.length === 8 ? "" : "Informe um CEP válido com 8 números.");
+  };
   const formatMoney = (value) => {
     const digits = value.replace(/\D/g, "").slice(0, 9);
     if (!digits) return "";
@@ -179,6 +195,47 @@ if (pqtForm) {
     const integerPart = cents.slice(0, -2).replace(/^0+(?=\d)/, "");
     const decimalPart = cents.slice(-2);
     return `${integerPart || "0"},${decimalPart}`;
+  };
+  const validateTicketField = () => {
+    const selected = ticketRadios.find((radio) => radio.checked)?.value;
+    if (selected !== "Valor aberto") {
+      ticketAberto.setCustomValidity("");
+      return;
+    }
+    const cents = ticketAberto.value.replace(/\D/g, "");
+    ticketAberto.setCustomValidity(Number(cents) > 0 ? "" : "Informe um valor maior que zero.");
+  };
+  const validateDates = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayIso = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+
+    dataEvento.setCustomValidity(
+      dataEvento.value && dataEvento.value < todayIso
+        ? "A data do evento não pode estar no passado."
+        : ""
+    );
+
+    const selected = periodoRadios.find((radio) => radio.checked)?.value;
+    if (selected === "Personalizado" && periodoPersonalizado.value && dataEvento.value &&
+        periodoPersonalizado.value < dataEvento.value) {
+      periodoPersonalizado.setCustomValidity("A data final deve ser igual ou posterior à data do evento.");
+    } else {
+      periodoPersonalizado.setCustomValidity("");
+    }
+  };
+  const validateFormValues = () => {
+    [document.getElementById("celular"), document.getElementById("celularOpcional"),
+      document.getElementById("hCelular"), document.getElementById("hCelularOpcional")]
+      .filter(Boolean)
+      .forEach(validatePhoneField);
+    [document.getElementById("mainCep"), document.getElementById("hCep")]
+      .filter(Boolean)
+      .forEach(validateCepField);
+    validateTicketField();
+    validateDates();
   };
 
   const syncRequiredState = (element, visible) => {
@@ -306,8 +363,18 @@ if (pqtForm) {
     }
     if (target.id === "celular" || target.id === "celularOpcional" || target.id === "hCelular" || target.id === "hCelularOpcional") {
       target.value = formatPhone(target.value);
+      validatePhoneField(target);
     }
     if (target.id === "ticketAberto") target.value = formatMoney(target.value);
+    if (target.id === "ticketAberto") validateTicketField();
+    if (target.id === "mainCep" || target.id === "hCep") validateCepField(target);
+    if (target.id === "dataEvento" || target.id === "periodoPersonalizado") validateDates();
+  });
+
+  pqtForm.addEventListener("change", (event) => {
+    if (event.target.id === "dataEvento" || event.target.id === "periodoPersonalizado") validateDates();
+    if (event.target.name === "periodo") validateDates();
+    if (event.target.name === "ticket") validateTicketField();
   });
 
   document.querySelectorAll("[data-cep-search]").forEach((button) => {
@@ -320,6 +387,7 @@ if (pqtForm) {
 
   pqtForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    validateFormValues();
     if (!pqtForm.reportValidity()) return;
 
     const submitBtn = pqtForm.querySelector(".submit-btn");
