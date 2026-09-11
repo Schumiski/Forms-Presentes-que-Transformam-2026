@@ -87,10 +87,12 @@ const pqtForm = document.getElementById("pqtForm");
 
 if (pqtForm) {
   const pqtStartedAt = Date.now();
-  const motivoRadios = [...pqtForm.querySelectorAll('input[name="motivo"]')];
-  const motivoOutroWrap = document.getElementById("motivoOutroWrap");
-  const motivoOutro = document.getElementById("motivoOutro");
-  const dataNascimentoWrap = document.getElementById("dataNascimentoWrap");
+   const motivoRadios = [...pqtForm.querySelectorAll('input[name="motivo"]')];
+   const motivoOutroWrap = document.getElementById("motivoOutroWrap");
+   const motivoOutro = document.getElementById("motivoOutro");
+   const motivoConjugeWrap = document.getElementById("motivoConjugeWrap");
+   const nomeConjuge = document.getElementById("nomeConjuge");
+   const dataNascimentoWrap = document.getElementById("dataNascimentoWrap");
   const dataNascimento = document.getElementById("dataNascimento");
   const eventoParaRadios = [...pqtForm.querySelectorAll('input[name="evento_para"]')];
   const homenageadoBlock = document.getElementById("homenageadoBlock");
@@ -205,15 +207,18 @@ if (pqtForm) {
   };
 
   const updateMotivo = () => {
-    const selected = motivoRadios.find((radio) => radio.checked)?.value;
-    const outro = selected === "Outro";
-    const aniversario = selected === "Aniversário";
+     const selected = motivoRadios.find((radio) => radio.checked)?.value;
+     const outro = selected === "Outro";
+     const conjuge = selected === "Casamento" || selected === "Bodas";
+     const aniversario = selected === "Aniversário";
 
-    setHiddenBlock(motivoOutroWrap, outro);
-    setHiddenBlock(dataNascimentoWrap, aniversario);
+     setHiddenBlock(motivoOutroWrap, outro);
+     setHiddenBlock(motivoConjugeWrap, conjuge);
+     setHiddenBlock(dataNascimentoWrap, aniversario);
 
-    motivoOutro.required = outro;
-    dataNascimento.required = aniversario;
+     motivoOutro.required = outro;
+     nomeConjuge.required = conjuge;
+     dataNascimento.required = aniversario;
   };
 
   const updateEventoPara = () => {
