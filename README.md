@@ -15,6 +15,10 @@ Abra `index.html` em um navegador ou publique a pasta no GitHub Pages.
 - `index.html`
 - `styles.css`
 - `script.js`
+- `etapa-2.html` — formulário principal
+- `etapa-3.html` — confirmação de envio
+- `apps-script.gs` — integração com Google Sheets e Portal de Gestão
+- `verificacao-completa.html` — preview visual das etapas
 - `admin.html` — página de gestão dos formulários preenchidos
 - `admin.css`
 - `admin.js`
@@ -28,6 +32,9 @@ Abra `index.html` em um navegador ou publique a pasta no GitHub Pages.
 - Alteração de status (Novo, Em contato, Aprovado, Concluído)
 - Visualização dos detalhes de cada resposta
 - Exportação em CSV
+
+O formulário também coleta o nome do cônjuge quando o motivo é casamento ou bodas.
+Esse campo é salvo na coluna `Nome do cônjuge` da aba `Respostas`.
 
 ## Segurança
 
